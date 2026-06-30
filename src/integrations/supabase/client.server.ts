@@ -5,6 +5,12 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
+const FALLBACK_SUPABASE_URL = "https://bieiejxghxjyntkotluc.supabase.co";
+
+function readProcessEnv(name: string) {
+  return typeof process !== 'undefined' ? process.env?.[name] : undefined;
+}
+
 function isNewSupabaseApiKey(value: string): boolean {
   return value.startsWith('sb_publishable_') || value.startsWith('sb_secret_');
 }
@@ -30,8 +36,8 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 }
 
 function createSupabaseAdminClient() {
-  const SUPABASE_URL = process.env.SUPABASE_URL;
-  const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const SUPABASE_URL = readProcessEnv('SUPABASE_URL') || readProcessEnv('VITE_SUPABASE_URL') || FALLBACK_SUPABASE_URL;
+  const SUPABASE_SERVICE_ROLE_KEY = readProcessEnv('SUPABASE_SERVICE_ROLE_KEY');
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     const missing = [

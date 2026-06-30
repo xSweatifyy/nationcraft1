@@ -4,6 +4,13 @@ import { getRequest } from '@tanstack/react-start/server'
 import { createClient } from '@supabase/supabase-js'
 import type { Database } from './types'
 
+const FALLBACK_SUPABASE_URL = "https://bieiejxghxjyntkotluc.supabase.co";
+const FALLBACK_SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJpZWllanhnaHhqeW50a290bHVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MDk2OTYsImV4cCI6MjA5Nzk4NTY5Nn0.IdR8yjs1ThgqSr5dBXyQHNu66Nqy5tBOr35ZwI1rw48";
+
+function readProcessEnv(name: string) {
+  return typeof process !== 'undefined' ? process.env?.[name] : undefined;
+}
+
 
 
 function isNewSupabaseApiKey(value: string): boolean {
@@ -33,8 +40,8 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server(
   async ({ next }) => {
     
-    const SUPABASE_URL = process.env.SUPABASE_URL;
-    const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY;
+    const SUPABASE_URL = readProcessEnv('SUPABASE_URL') || readProcessEnv('VITE_SUPABASE_URL') || FALLBACK_SUPABASE_URL;
+    const SUPABASE_PUBLISHABLE_KEY = readProcessEnv('SUPABASE_PUBLISHABLE_KEY') || readProcessEnv('VITE_SUPABASE_PUBLISHABLE_KEY') || FALLBACK_SUPABASE_PUBLISHABLE_KEY;
 
     if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
       const missing = [

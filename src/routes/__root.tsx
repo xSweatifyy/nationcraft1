@@ -82,16 +82,14 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       if (event === "SIGNED_IN" && session?.user) {
         const nick =
           (session.user.user_metadata as any)?.minecraft_nick ||
           session.user.email?.split("@")[0] ||
           "Unknown";
-        try {
-          await supabase.from("login_log").insert({ user_id: session.user.id, nick });
-        } catch {}
+        void supabase.from("login_log").insert({ user_id: session.user.id, nick });
       }
       router.invalidate();
       if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
