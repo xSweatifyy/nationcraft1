@@ -4,9 +4,8 @@ import { getRequest } from "@tanstack/react-start/server";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 
-const FALLBACK_SUPABASE_URL = "https://xogcbgdxdvwekdsjsrhk.supabase.co";
-const FALLBACK_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ObJjr0j_xeA7Yu9Wv7imcg_w_i2P2MV";
-
+const FALLBACK_SUPABASE_URL = "https://bieiejxghxjyntkotluc.supabase.co";
+const FALLBACK_SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJpZWllanhnaHhqeW50a290bHVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MDk2OTYsImV4cCI6MjA5Nzk4NTY5Nn0.IdR8yjs1ThgqSr5dBXyQHNu66Nqy5tBOr35ZwI1rw48";
 function readProcessEnv(name: string) {
   return typeof process !== "undefined" ? process.env?.[name] : undefined;
 }
