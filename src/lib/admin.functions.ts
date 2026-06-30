@@ -218,15 +218,24 @@ export const adminCreateUser = createServerFn({ method: "POST" })
         must_change_password: true,
       },
     });
-    if (error || !created.user) throw new Error(error?.message ?? "create failed");
-    await supabaseAdmin.from("user_roles").insert({ user_id: created.user.id, role: tier.role });
-    await supabaseAdmin.from("profiles").upsert({
-      id: created.user.id,
-      minecraft_nick: data.nick,
-      full_access: fa,
-      must_change_password: true,
-      display_role: data.display_role,
-    });
+ if (error || !created.user) throw new Error(error?.message ?? "create failed");
+
+// Smaž případnou default roli vytvořenou DB triggerem, pak vlož tu vybranou.
+await supabaseAdmin.from("user_roles").delete().eq("user_id", created.user.id);
+const { error: roleErr } = await supabaseAdmin
+  .from("user_roles")
+  .insert({ user_id: created.user.id, role: tier.role });
+if (roleErr) throw new Error("Nastavení role selhalo: " + roleErr.message);
+
+const { error: profErr } = await supabaseAdmin.from("profiles").upsert({
+  id: created.user.id,
+  minecraft_nick: data.nick,
+  full_access: fa,
+  must_change_password: true,
+  display_role: data.display_role,
+});
+if (profErr) throw new Error("Uložení profilu selhalo: " + profErr.message);
+
     return { ok: true, email };
   });
 
